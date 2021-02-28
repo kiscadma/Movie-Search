@@ -6,7 +6,7 @@ from collections import defaultdict
 from sklearn.feature_extraction.text import TfidfVectorizer
 
 
-stop_words = stopwords.words('english')
+stop_words = set(stopwords.words('english'))
 lem = WordNetLemmatizer()
 def preprocess(text):
     text = re.split('\W+', text.lower())
@@ -44,33 +44,38 @@ data = load_data(load_processed_file=True)
 vectorizer = TfidfVectorizer(max_features=20000)
 tfidf = vectorizer.fit_transform(data["Plot"])
 vocab = vectorizer.get_feature_names()
-movies = defaultdict(list)
+movies = defaultdict(set)
 
 # iterate through movies and find the top words from the TF-IDF, and store them as a list
 for i in tqdm(range(data.shape[0]), desc="Finding most significant words from each movie"):
     ind = np.argpartition(tfidf[i,].toarray()[0], kth=-25)[-25:]
-    movies[data.at[i, 'Title']] = [vocab[j] for j in ind]
+    movies[data.at[i, 'Title']] = set([vocab[j] for j in ind])
 
 while True:
     text = input("\nEnter a movie title or a description of a movie, or 'quit' to stop: ")
     if text == 'quit':
         break
-    plot = set(preprocess(text).split()) # preprocess the query to match plots
-    title = set(text.lower().split()) # unprocessed text to match title exactly
+    plot = set(preprocess(text).split()) # preprocess the query to match plots (lemmatized)
+    title = set(text.lower().split()) - stop_words # not lemmatized to match exact wording of title
     share_plot = []
     share_title = []
+
     for m in movies:
         s = set(m.lower().split())
-        if len(s & title): # add titles that share words
-            share_title.append((len(s & title), m))
-        share_plot.append((len(set(movies[m]) - plot), m))
+        shared = len(s & title)
+        if shared: # add titles that share words
+            share_title.append((shared, m))
+
+        shared = len(movies[m] & plot)
+        if shared: # add plots that share words
+            share_plot.append((shared, m))
 
     share_title.sort(reverse=True)
     print(f"Movie titles most similar to '{text}':")
     for i in range(min(5, len(share_title))):
         print(f"\t{i+1}. {share_title[i][1]}")
         
-    share_plot.sort()
+    share_plot.sort(reverse=True)
     print(f"Movie plots most similar to '{text}':")
     for i in range(min(5, len(share_plot))):
         print(f"\t{i+1}. {share_plot[i][1]}")
