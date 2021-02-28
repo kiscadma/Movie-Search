@@ -1,6 +1,8 @@
 # movie-search
 Search for movies using keywords or movie titles
 
+Use the movie_notebook.ipynb jupyer notebook for a guide through the project.
+
 
 This project uses movies from the Wikipedia movie plot dataset (https://www.kaggle.com/jrobischon/wikipedia-movie-plots), specifically American films from 1972-2017.
 
