@@ -6,5 +6,5 @@ This project uses movies from the Wikipedia movie plot dataset (https://www.kagg
 
 Plots are analyzed and use TF-IDF to find significant words, and are stored for lookup. The user can input movie titles or keywords into the console, and the program will print relevant movie titles.
 
-Ideally, the project would be enhanced to weight words from the TFIDF, so entries that feature more rare words would appear higher in the output.
+Ideally, the project would be enhanced to weight words from the TF-IDF, so entries that feature more rare words would appear higher in the output.
 
